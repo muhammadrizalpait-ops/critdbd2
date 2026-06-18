@@ -77,7 +77,7 @@ export default function Player() {
   // 🎯 SISTEM ROTASI DIRECT LINK 50:50 SAAT VERIFIKASI DIKLIK
   const handleAgeVerify = () => {
     const directLinkAkun1 = 'https://www.effectivecpmnetwork.com/fsycadyb?key=c37dc1a170c0791cc83202fcc502aea4';
-    const directLinkAkun2 = 'https://www.effectivegatecpm.com/u88ksn21bi?key=466e5edc4b150634636ec85f6be789c3'; // <-- SILAKAN GANTI KUNCI KEY DIRECT LINK AKUN 2 KAMU DI SINI GESS
+    const directLinkAkun2 = 'https://researchingsweatexit.com/yhdf709m?key=0b40be49042ba751a97e8458be1cf713'; // <-- SILAKAN GANTI KUNCI KEY DIRECT LINK AKUN 2 KAMU DI SINI GESS
 
     // Pilih secara acak 50:50
     const directLinkTerpilih = Math.random() < 0.5 ? directLinkAkun1 : directLinkAkun2;
