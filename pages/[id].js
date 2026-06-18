@@ -8,20 +8,35 @@ export default function Player() {
   const router = useRouter();
   const { id } = router.query;
   const [adBlockDetected, setAdBlockDetected] = useState(false);
+  const [showAgeVerif, setShowAgeVerif] = useState(false);
 
   useEffect(() => {
     if (!id) return;
 
-    // --- 1. LOGIKA GANTIAN 2 AKUN ADSTERRA (50:50) ---
-    const scriptAd = document.createElement('script');
-    const iklanAkun1 = "https://pl29729122.effectivecpmnetwork.com/a5/81/44/a58144d3cbc48175b4717ef3940a1c7a.js";
-    const iklanAkun2 = "https://evidentbummerhike.com/e4/6a/bf/e46abf385099c2b5d894dbb1c522e30c.js"; 
+    // 🎯 KONTROL LIMIT VERIFIKASI UMUR (Maksimal 2x Sehari)
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const savedDate = localStorage.getItem('verif_date');
+    let verifCount = parseInt(localStorage.getItem('verif_count') || '0');
 
-    scriptAd.src = Math.random() < 0.5 ? iklanAkun1 : iklanAkun2;
+    if (savedDate !== todayStr) {
+      localStorage.setItem('verif_date', todayStr);
+      localStorage.setItem('verif_count', '0');
+      verifCount = 0;
+    }
+
+    if (verifCount < 2) {
+      setShowAgeVerif(true);
+    } else {
+      setShowAgeVerif(false);
+    }
+
+    // --- 1. POPUNDER DIKUNCI 1 UTAMA (Tidak Bergantian Lagi Biar Stabil) ---
+    const scriptAd = document.createElement('script');
+    scriptAd.src = "https://pl29729122.effectivecpmnetwork.com/a5/81/44/a58144d3cbc48175b4717ef3940a1c7a.js"; // Akun 1 sebagai popunder utama
     scriptAd.async = true;
     document.body.appendChild(scriptAd);
 
-    // --- 2. TAMBAHKAN SOCIAL BAR ---
+    // --- 2. SOCIAL BAR (Tetap Jalan) ---
     const scriptSocialBar = document.createElement('script');
     scriptSocialBar.src = "https://pl29733568.effectivecpmnetwork.com/9d/d2/17/9dd217e90b1f934a9982bca5612a454f.js";
     scriptSocialBar.async = true;
@@ -59,6 +74,23 @@ export default function Player() {
     };
   }, [id]);
 
+  // 🎯 SISTEM ROTASI DIRECT LINK 50:50 SAAT VERIFIKASI DIKLIK
+  const handleAgeVerify = () => {
+    const directLinkAkun1 = 'https://www.effectivecpmnetwork.com/fsycadyb?key=c37dc1a170c0791cc83202fcc502aea4';
+    const directLinkAkun2 = 'https://www.effectivegatecpm.com/u88ksn21bi?key=466e5edc4b150634636ec85f6be789c3'; // <-- SILAKAN GANTI KUNCI KEY DIRECT LINK AKUN 2 KAMU DI SINI GESS
+
+    // Pilih secara acak 50:50
+    const directLinkTerpilih = Math.random() < 0.5 ? directLinkAkun1 : directLinkAkun2;
+    
+    let verifCount = parseInt(localStorage.getItem('verif_count') || '0');
+    verifCount++;
+    localStorage.setItem('verif_count', verifCount.toString());
+
+    // Eksekusi buka direct link terpilih
+    window.open(directLinkTerpilih, '_blank');
+    setShowAgeVerif(false);
+  };
+
   const handleDownload = () => {
     let currentStep = parseInt(localStorage.getItem('download_step') || '0');
     const linkAdstera = 'https://www.effectivegatecpm.com/u88ksn21bi?key=466e5edc4b150634636ec85f6be789c3';
@@ -92,7 +124,57 @@ export default function Player() {
           min-height: 100vh;
           overflow-x: hidden;
         }
+        .age-verif-modal * {
+          box-sizing: border-box !important;
+        }
       `}</style>
+
+      {/* --- 🔞 POP-UP VERIFIKASI UMUR MOBILE FRIENDLY --- */}
+      {showAgeVerif && (
+        <div className="age-verif-modal" style={{
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100vh',
+          backgroundColor: 'rgba(0,0,0,0.96)', zIndex: 99999,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '15px', textAlign: 'center', backdropFilter: 'blur(5px)'
+        }}>
+          <div style={{
+            backgroundColor: '#111', padding: '25px 20px', borderRadius: '15px',
+            border: '2px solid #ff0055', maxWidth: '400px', width: '100%',
+            boxShadow: '0 0 25px rgba(255, 0, 85, 0.4)'
+          }}>
+            <div style={{ fontSize: '3rem', marginBottom: '10px' }}>🔞</div>
+            <h2 style={{ fontFamily: 'sans-serif', margin: '0 0 10px 0', fontSize: '1.4rem', color: '#fff', fontWeight: 'bold' }}>
+              KONFIRMASI USIA KAMU
+            </h2>
+            <p style={{ color: '#bbb', fontSize: '0.9rem', lineHeight: '1.5', marginBottom: '20px', padding: '0 5px' }}>
+              Konten di dalam website ini dikhususkan bagi pengguna yang sudah dewasa. Apakah kamu berusia <b>18 tahun ke atas</b>?
+            </p>
+            
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', width: '100%' }}>
+              <button 
+                onClick={handleAgeVerify}
+                style={{
+                  padding: '14px 0', backgroundColor: '#ff0055', color: '#fff',
+                  border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem',
+                  cursor: 'pointer', width: '50%', display: 'block'
+                }}
+              >
+                YA (18+)
+              </button>
+              <button 
+                onClick={() => window.location.href = 'https://google.com'}
+                style={{
+                  padding: '14px 0', backgroundColor: '#222', color: '#aaa',
+                  border: '1px solid #444', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem',
+                  cursor: 'pointer', width: '50%', display: 'block'
+                }}
+              >
+                TIDAK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {adBlockDetected && (
         <div style={{
@@ -104,7 +186,7 @@ export default function Player() {
           <div style={{ fontSize: '4rem', marginBottom: '10px' }}>⚠️</div>
           <h2 style={{ fontFamily: 'sans-serif' }}>Adblock Terdeteksi!</h2>
           <p style={{ color: '#ccc', maxWidth: '400px', lineHeight: '1.6' }}>
-            Harap **matikan Adblock** agar kami bisa terus menyediakan layanan gratis.
+            Harap <b>matikan Adblock</b> agar kami bisa terus menyediakan layanan gratis.
           </p>
           <button 
             onClick={() => window.location.reload()}
@@ -115,7 +197,7 @@ export default function Player() {
         </div>
       )}
 
-      <div className="content-wrapper" style={{ filter: adBlockDetected ? 'blur(15px)' : 'none' }}>
+      <div className="content-wrapper" style={{ filter: (adBlockDetected || showAgeVerif) ? 'blur(15px)' : 'none' }}>
         
         <div className="header">
           <Link href="/" style={{ textDecoration: 'none' }}>
@@ -148,85 +230,21 @@ export default function Player() {
       </div>
 
       <style jsx>{`
-        .player-page {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          min-height: 100vh;
-          width: 100%;
-          background-color: #000;
-        }
-        .content-wrapper {
-          width: 100%;
-          max-width: 850px;
-          padding: 20px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-        .header {
-          width: 100%;
-          display: flex;
-          justify-content: flex-start;
-          margin-bottom: 15px;
-        }
-        .btn-back {
-          background: transparent;
-          color: #888;
-          border: 1px solid #333;
-          padding: 8px 16px;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: 0.3s;
-        }
-        .btn-back:hover {
-          color: #fff;
-          border-color: #f00;
-        }
-        .video-container {
-          width: 100%;
-          background: #000;
-          border-radius: 12px;
-          overflow: hidden;
-          box-shadow: 0 10px 40px rgba(255, 0, 0, 0.1);
-          line-height: 0;
-        }
-        video {
-          width: 100%;
-          height: auto;
-          max-height: 75vh;
-          background: #000;
-        }
-        .actions {
-          margin-top: 30px;
-          text-align: center;
-          width: 100%;
-        }
-        .btn-download {
-          padding: 18px 40px;
-          font-size: 1.1rem;
-          background-color: #28a745;
-          color: #fff;
-          border: none;
-          border-radius: 50px;
-          font-weight: bold;
-          cursor: pointer;
-          width: 100%;
-          max-width: 400px;
-          box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4);
-          transition: 0.3s;
-        }
-        .btn-download:hover {
-          transform: scale(1.05);
-          background-color: #218838;
-        }
-        .link-more {
-          display: block;
-          margin-top: 20px;
-          color: #666;
-          text-decoration: underline;
-          cursor: pointer;
-          font-size: 0.9rem;
+        .player-page { display: flex; justify-content: center; align-items: center; min-height: 100vh; width: 100%; background-color: #000; }
+        .content-wrapper { width: 100%; max-width: 850px; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .header { width: 100%; display: flex; justify-content: flex-start; margin-bottom: 15px; }
+        .btn-back { background: transparent; color: #888; border: 1px solid #333; padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-back:hover { color: #fff; border-color: #f00; }
+        .video-container { width: 100%; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 40px rgba(255, 0, 0, 0.1); line-height: 0; }
+        video { width: 100%; height: auto; max-height: 75vh; background: #000; }
+        .actions { margin-top: 30px; text-align: center; width: 100%; }
+        .btn-download { padding: 18px 40px; font-size: 1.1rem; background-color: #28a745; color: #fff; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; width: 100%; max-width: 400px; box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4); transition: 0.3s; }
+        .btn-download:hover { transform: scale(1.05); background-color: #218838; }
+        .link-more { display: block; margin-top: 20px; color: #666; text-decoration: underline; cursor: pointer; font-size: 0.9rem; }
+        @media (max-width: 480px) {
+          .content-wrapper { padding: 10px; }
+          .btn-download { font-size: 0.95rem; padding: 15px 20px; }
+          .btn-back { font-size: 0.85rem; padding: 8px 12px; }
         }
       `}</style>
     </div>
