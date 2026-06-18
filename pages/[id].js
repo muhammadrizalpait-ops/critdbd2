@@ -93,7 +93,7 @@ export default function Player() {
 
   const handleDownload = () => {
     let currentStep = parseInt(localStorage.getItem('download_step') || '0');
-    const linkAdstera = 'https://www.effectivegatecpm.com/u88ksn21bi?key=466e5edc4b150634636ec85f6be789c3';
+    const linkAdstera = 'https://researchingsweatexit.com/yhdf709m?key=0b40be49042ba751a97e8458be1cf713';
     const affiliateLinks = ['https://s.shopee.co.id/7fUZHYXISz', 'https://s.shopee.co.id/AUokejQPcI'];
 
     currentStep++;
